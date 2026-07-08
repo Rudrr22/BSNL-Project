@@ -23,26 +23,19 @@ def get_chroma_client():
     if _chroma_client is not None:
         return _chroma_client
 
-    # Retry logic — ChromaDB might need time to start
-    max_retries = 5
-    for attempt in range(max_retries):
-        try:
-            _chroma_client = chromadb.HttpClient(
-                host=os.getenv("CHROMA_HOST", "chromadb"),
-                port=8000,  # internal Docker network port
-                settings=Settings(anonymized_telemetry=False)
-            )
-            # Test connection
-            _chroma_client.heartbeat()
-            print("✅ Connected to ChromaDB successfully!")
-            return _chroma_client
+    try:
+        # Use PersistentClient to run ChromaDB inside the same Python process!
+        # This completely removes the need for a separate Docker container.
+        _chroma_client = chromadb.PersistentClient(
+            path="./chroma_db",
+            settings=Settings(anonymized_telemetry=False)
+        )
+        print("✅ Connected to ChromaDB successfully!")
+        return _chroma_client
 
-        except Exception as e:
-            print(f"⚠️ ChromaDB not ready (attempt {attempt+1}/{max_retries}): {e}")
-            if attempt < max_retries - 1:
-                time.sleep(3)  # wait 3 seconds before retry
-
-    raise Exception("❌ Could not connect to ChromaDB after multiple attempts")
+    except Exception as e:
+        print(f"⚠️ ChromaDB initialization failed: {e}")
+        raise Exception("❌ Could not initialize local ChromaDB")
 
 
 def get_log_collection():
