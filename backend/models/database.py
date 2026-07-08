@@ -10,16 +10,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Build the database URL from environment variables
-# Format: postgresql://user:password@host:port/dbname
-DATABASE_URL = (
-    f"postgresql://"
-    f"{os.getenv('POSTGRES_USER', 'postgres')}:"
-    f"{os.getenv('POSTGRES_PASSWORD', 'teleguard123')}@"
-    f"{os.getenv('POSTGRES_HOST', 'postgres')}:"
-    f"{os.getenv('POSTGRES_PORT', '5432')}/"
-    f"{os.getenv('POSTGRES_DB', 'teleguard')}"
-)
+# Use DATABASE_URL if provided (e.g. on Render), otherwise build it from individual parts for local Docker
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    DATABASE_URL = (
+        f"postgresql://"
+        f"{os.getenv('POSTGRES_USER', 'postgres')}:"
+        f"{os.getenv('POSTGRES_PASSWORD', 'teleguard123')}@"
+        f"{os.getenv('POSTGRES_HOST', 'postgres')}:"
+        f"{os.getenv('POSTGRES_PORT', '5432')}/"
+        f"{os.getenv('POSTGRES_DB', 'teleguard')}"
+    )
 
 print(f"🗄️ Connecting to database: {DATABASE_URL}")
 
