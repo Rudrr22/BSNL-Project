@@ -1,0 +1,103 @@
+
+
+networks:
+  teleguard-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  chroma_data:
+
+services:
+
+  # ─── PostgreSQL Database ───────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: teleguard-postgres
+    networks:
+      - teleguard-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: teleguard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: teleguard123
+      
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── ChromaDB Vector Database ─────────────────────
+  chromadb:
+    image: chromadb/chroma:0.5.3
+    container_name: teleguard-chromadb
+    networks:
+      - teleguard-network
+    volumes:
+      - chroma_data:/chroma/chroma
+    ports:
+      - "8001:8000"
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+
+  # ─── FastAPI Backend ───────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: teleguard-backend
+    networks:
+      - teleguard-network
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+    restart: unless-stopped
+    # Wait extra time for ChromaDB to fully initialize
+    environment:
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+  # ─── React Frontend ────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: teleguard-frontend
+    networks:
+      - teleguard-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # ─── Log Simulator ─────────────────────────────────
+  simulator:
+    build:
+      context: ./simulator
+      dockerfile: Dockerfile
+    container_name: teleguard-simulator
+    networks:
+      - teleguard-network
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    restart: unless-stopped

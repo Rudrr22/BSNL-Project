@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100">
+  <g transform="translate(10, 10)">
+    <!-- Grey Circle -->
+    <circle cx="40" cy="40" r="35" fill="#C4C4C4" />
+    <!-- Red Arrow (Approximation) -->
+    <path d="M15,65 C30,30 45,30 50,20 L40,20 L55,5 L65,25 L55,25 C45,40 30,50 15,65 Z" fill="#E31837" />
+    <!-- Blue Arrow (Approximation) -->
+    <path d="M65,15 C50,50 35,50 30,60 L40,60 L25,75 L15,55 L25,55 C35,40 50,30 65,15 Z" fill="#005B9F" />
+  </g>
+  <text x="100" y="55" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#005B9F">BSNL</text>
+  <text x="105" y="80" font-family="Brush Script MT, cursive, Arial, sans-serif" font-size="20" fill="#E31837">Connecting India</text>
+</svg>

@@ -1,0 +1,34 @@
+# Web Framework
+fastapi==0.111.0
+uvicorn==0.30.1
+python-multipart==0.0.9
+
+# Database
+sqlalchemy==2.0.30
+psycopg2-binary==2.9.9
+alembic==1.13.1
+
+# AI / LLM
+langchain==0.2.5
+langchain-groq==0.1.6
+langchain-google-genai==1.0.6
+langgraph==0.1.14
+langchain-community==0.2.5
+
+# Vector Database
+chromadb==0.5.3
+langchain-chroma==0.1.1
+
+# Embeddings (CPU only — no CUDA needed)
+sentence-transformers==3.0.1
+torch==2.3.1+cpu
+torchvision==0.18.1+cpu
+
+# PDF Generation
+reportlab==4.2.2
+
+# Utilities
+python-dotenv==1.0.1
+pydantic==2.7.4
+httpx==0.27.0
+websockets==12.0
