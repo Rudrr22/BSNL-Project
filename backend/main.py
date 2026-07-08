@@ -31,7 +31,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,  # MUST be False if origins is "*" to satisfy browser CORS rules
     allow_methods=["*"],
     allow_headers=["*"],
     # Expose these headers so the browser can read them for file downloads
